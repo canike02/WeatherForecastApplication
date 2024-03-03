@@ -23,8 +23,18 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
     @Autowired
     private CacheManager cacheManager;
 
+
+    /*
+     * Service that does basic validation checks nd looks up the cache
+     * for any non-null zipcode that was already fetched within a
+     * defined time span in minutes.
+     *
+     * @params - zipCode, numberOfDays
+     * @return ForecastDetails
+     */
     @Override
     public ForecastDetails getWeatherForecast(Long zipCode, int numberOfDays) {
+
         if(Objects.isNull(zipCode))
             return new ForecastDetails(new ForecastDay(), Boolean.FALSE);
 
@@ -37,7 +47,12 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
             return cachedDetails;
         }
 
-        return this.weatherForecastApiService.getForecastDetailsFromApi(zipCode, numberOfDays);
+        ForecastDetails forecastDetailsFetched =
+                this.weatherForecastApiService.getForecastDetailsFromApi(zipCode, numberOfDays);
+        if(Objects.isNull(forecastDetailsFetched))
+            return new ForecastDetails(new ForecastDay(), Boolean.FALSE);
+
+        return forecastDetailsFetched;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.apple.weather.app.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,15 +13,18 @@ import java.time.LocalDateTime;
 public class Forecast {
 
     private Number ts;
-    private LocalDateTime timestamp_local;
+    private String timestamp_local;
     private LocalDateTime timestamp_utc;
     private String datetime;
     private int snow;
     private Number snow_depth;
     private Number precip;
+    @JsonProperty(index = 1)
     private Number temp;
     private Number dewpt;
+    @JsonProperty(index = 2)
     private Number max_temp;
+    @JsonProperty(index = 3)
     private Number min_temp;
     private Number app_max_temp;
     private Number app_min_temp;

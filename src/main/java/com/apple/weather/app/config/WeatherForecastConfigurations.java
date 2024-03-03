@@ -1,7 +1,9 @@
 package com.apple.weather.app.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -13,7 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableCaching
+@EnableEncryptableProperties
 public class WeatherForecastConfigurations {
+
+    @Value("${cache.timeout.interval.in.millis}")
+    private Long cacheTimeoutInMillis;
 
     @Bean
     @Qualifier("restTemplate")
@@ -30,6 +36,6 @@ public class WeatherForecastConfigurations {
 
     @Bean
     public Caffeine caffeineConfig() {
-        return Caffeine.newBuilder().expireAfterWrite(4, TimeUnit.MINUTES);
+        return Caffeine.newBuilder().expireAfterWrite(cacheTimeoutInMillis, TimeUnit.MILLISECONDS);
     }
 }

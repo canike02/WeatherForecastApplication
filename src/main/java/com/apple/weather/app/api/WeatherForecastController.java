@@ -17,13 +17,24 @@ public class WeatherForecastController {
     @Autowired
     private WeatherForecastService weatherForecastService;
 
+    /*
+    * Rest/GET API to fetch weather forecast details for a zipCode (required)
+    * and for (optional) a number of days in the future, using default as 16).
+    */
     @GetMapping("/forecast")
     public ResponseEntity<ForecastDetails> getWeatherForecast(
             @RequestParam Long zipCode,
-            @RequestParam(required = false) String numberOfDays ){
-        int daysToDisplayFor = Objects.nonNull(numberOfDays) ? Integer.parseInt(numberOfDays) : 16;
-        return new ResponseEntity<>(
-                weatherForecastService.getWeatherForecast(zipCode, daysToDisplayFor),
-                HttpStatus.OK);
+            @RequestParam(required = false, defaultValue = "16") String numberOfDays ){
+
+        int daysToDisplayFor = Integer.parseInt(numberOfDays);
+
+        ForecastDetails details =
+                this.weatherForecastService.getWeatherForecast(zipCode, daysToDisplayFor);
+
+        //when incorrect zip code details are fed in, or the service fails to fetch anything
+        if(Objects.isNull(details.getWeatherForecastData().getCity_name()))
+            return ResponseEntity.noContent().build();
+
+        return new ResponseEntity<>(details, HttpStatus.OK);
     }
 }
